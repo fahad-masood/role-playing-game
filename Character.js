@@ -1,17 +1,18 @@
-import { getDiceRollArray, getDicePlaceholderHtml } from "./utils.js";
-
-const getPercentage = (remainingHealth, maximumHealth) =>
-  (100 * remainingHealth) / maximumHealth;
+import {
+  getDiceRollArray,
+  getDicePlaceholderHtml,
+  getPercentage,
+} from "./utils.js";
 
 function Character(data) {
   Object.assign(this, data);
   this.maxHealth = this.health;
 
-  this.diceArray = getDicePlaceholderHtml(this.diceCount);
+  this.diceHtml = getDicePlaceholderHtml(this.diceCount);
 
-  this.getDiceHtml = function () {
+  this.setDiceHtml = function () {
     this.currentDiceScore = getDiceRollArray(this.diceCount);
-    this.diceArray = this.currentDiceScore
+    this.diceHtml = this.currentDiceScore
       .map((num) => `<div class="dice">${num}</div>`)
       .join("");
   };
@@ -27,37 +28,19 @@ function Character(data) {
     }
   };
 
-  /*
-CHALLENGE
-1. Instead of just logging the percent, getHealthBarHtml 
-needs to return this string of html:
-`<div class="health-bar-outer">
-    <div class="health-bar-inner *YOUR CODE HERE* " 
-        style="width: *YOUR CODE HERE* %;">
-    </div>
-</div>`
-2. You need to make some changes to that string of HTML.
-2a. If the amount of health left is 25% or lower, add the class 
-"danger" to the div with the class "health-bar-inner".
-2b. The width of that div should be the % health remaining. 
-3. Be sure to add the healthBar variable to the string of HTML
-rendered by getCharacterHtml.
-**hint.md for help!!**       
-*/
-
   this.getHealthBarHtml = function () {
     const percent = getPercentage(this.health, this.maxHealth);
-
-    return `
-        <div class="health-bar-outer">
-            <div class="health-bar-inner ${percent < 26 ? "danger" : ""} " 
-            style="width: ${percent}%;">
-            </div>
-        </div>`;
+    return `<div class="health-bar-outer">
+                    <div class="health-bar-inner ${
+                      percent < 26 ? "danger" : ""
+                    }" 
+                            style="width:${percent}%;">
+                    </div>
+                </div>`;
   };
 
   this.getCharacterHtml = function () {
-    const { elementId, name, avatar, health, diceCount } = this;
+    const { elementId, name, avatar, health, diceCount, diceHtml } = this;
     const healthBar = this.getHealthBarHtml();
     return `
             <div class="character-card">
@@ -66,7 +49,7 @@ rendered by getCharacterHtml.
                 <div class="health">health: <b> ${health} </b></div>
                 ${healthBar}
                 <div class="dice-container">
-                    ${this.diceArray}
+                    ${diceHtml}
                 </div>
             </div>`;
   };
